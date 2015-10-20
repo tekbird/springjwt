@@ -13,7 +13,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.nimbusds.jwt.SignedJWT;
@@ -22,19 +21,16 @@ public class JwtFilter extends GenericFilterBean {
 
 	AuthenticationManager authenticationManager;
 
-	AuthenticationEntryPoint entryPoint;
-
-	public JwtFilter(AuthenticationManager authenticationManager, AuthenticationEntryPoint entryPoint) {
+	public JwtFilter(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
-		this.entryPoint = entryPoint;
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response,
+			FilterChain chain) throws IOException, ServletException {
 		System.out.println("JwtFilter.doFilter");
-		System.out.println("JwtFilter.authenticationManager" + authenticationManager);
-		System.out.println("JwtFilter.entryPoint" + entryPoint);
+		System.out.println("JwtFilter.authenticationManager"
+				+ authenticationManager);
 
 		HttpServletRequest req = (HttpServletRequest) request;
 
@@ -45,10 +41,8 @@ public class JwtFilter extends GenericFilterBean {
 			try {
 				SignedJWT sjwt = SignedJWT.parse(stringToken);
 				JwtToken token = new JwtToken(sjwt);
-				Authentication auth = authenticationManager.authenticate((Authentication) token);
-				if (!auth.isAuthenticated()) {
-					throw new JwtAuthenticationException("failed");
-				}
+				Authentication auth = authenticationManager
+						.authenticate((Authentication) token);
 				SecurityContextHolder.getContext().setAuthentication(auth);
 			} catch (ParseException e) {
 				e.printStackTrace();
