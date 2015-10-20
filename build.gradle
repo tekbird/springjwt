@@ -1,0 +1,70 @@
+buildscript {
+    ext {
+        springBootVersion = '1.2.7.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+        classpath('io.spring.gradle:dependency-management-plugin:0.5.2.RELEASE')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'idea'
+apply plugin: 'spring-boot' 
+apply plugin: 'io.spring.dependency-management' 
+apply plugin: 'war'
+
+
+war {
+    baseName = 'springdemo'    
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    providedRuntime
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web") 
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("org.springframework.security:spring-security-web")
+    compile("org.springframework.security:spring-security-config")
+    compile("com.nimbusds:nimbus-jose-jwt:4.3")
+    providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+}
+
+
+eclipse {
+    classpath {
+         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.7'
+}
+
+task deleteTask(type: Delete) {
+	delete 'D:/tomcat/webapps/springdemo.war'
+}
+
+task copyTask(type: Copy) {
+	File file = file('D:/tomcat/webapps/springdemo.war')
+	//delete 'D:/tomcat/webapps/springdemo'
+	delete(file)
+    from('D:/eclise/projects/springdemo/build/libs/')
+    into('D:/tomcat/webapps')
+    include('springdemo.war')
+}
+
+assemble.finalizedBy(copyTask)
