@@ -39,6 +39,7 @@ dependencies {
     compile("org.springframework.security:spring-security-web")
     compile("org.springframework.security:spring-security-config")
     compile("com.nimbusds:nimbus-jose-jwt:4.3")
+    testCompile("org.springframework.boot:spring-boot-starter-test") 
     providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 }
 
